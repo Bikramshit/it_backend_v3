@@ -10,7 +10,6 @@ import { SendOTP, sendEmail } from "../utils/sendOTP.js";
 
 export const Register = catchAsyncError(async(req, res, next)=>{
     const {name,  phone,email, password, dob, designation, department, pan, category, aadhaar} = req.body;
-    // console.log(name,  phone,email, password, dob, designation, department, pan, category, aadhaar);   
     
     if(!pan || !password ) return next(new ErrorHandler("Please enter all field", 400));
     
@@ -222,7 +221,7 @@ export const VerifyOtp = catchAsyncError(async (req, res, next) => {
   
     const user = await User.findById(req.user._id);
     await User.findByIdAndUpdate(user._id, req.body);
-    // console.log(user);
+  
     await user.save();
   
     res.status(200).json({
@@ -425,11 +424,11 @@ export const getUserDetails = catchAsyncError(async(req,res,next)=> {
 export const SendMail = catchAsyncError(async(req,res,next)=> {
 
   const {id,subject,  msg } = req.body;
-  console.log(id);
+
   let user = await User.findById(id);
   let admin = await User.findById(req.user._id);
   if(!admin) return next(new ErrorHandler("You are not allow to send this request"));
-  console.log(user);
+ 
   // await sendEmail()
   await  sendEmail(user.email,subject, msg );
 
