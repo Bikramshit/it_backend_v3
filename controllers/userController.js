@@ -16,7 +16,7 @@ export const Register = catchAsyncError(async(req, res, next)=>{
         let user = await User.findOne({pan});
         if (user ) return next(new ErrorHandler("User Already Exist", 409));
         
-        
+      
           
       
           user = new User({

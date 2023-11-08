@@ -23,7 +23,9 @@ export const CreateResponse = catchAsyncError(async(req, res, next)=>{
     // user.name=name;
     // user.designation=designation;
     // user.category=category;
-    // user.aadhaar=aadhaar;
+    if(user.aadhaar===undefined || user.aadhaar===""){
+      user.aadhaar = aadhaar;
+    }
     // user.email=email;
     // user.phone=phone;
     // user.department=department;
