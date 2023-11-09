@@ -36,7 +36,7 @@ router.route("/me").delete(isAuthenticated, deleteMyProfile);
 router.route("/changepassword").put(isAuthenticated, changePassword);
 
 // UpdateProfile
-router.route("/updateprofile").put(isAuthenticated, updateProfile);
+router.route("/admin/user/update/:id").put(isAuthenticated, updateProfile);
 
 
 // ForgetPasswordw

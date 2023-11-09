@@ -219,7 +219,7 @@ export const VerifyOtp = catchAsyncError(async (req, res, next) => {
   export const updateProfile = catchAsyncError(async (req, res, next) => {
     
   
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.params.id);
     await User.findByIdAndUpdate(user._id, req.body);
   
     await user.save();
