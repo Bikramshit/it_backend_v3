@@ -427,7 +427,7 @@ export const SendMail = catchAsyncError(async(req,res,next)=> {
 
   let user = await User.findById(id);
   let admin = await User.findById(req.user._id);
-  if(!admin) return next(new ErrorHandler("You are not allow to send this request"));
+  if(admin.role!=="admin") return next(new ErrorHandler("You are not allow to send this request"));
  
   // await sendEmail()
   await  sendEmail(user.email,subject, msg );

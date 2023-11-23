@@ -33,8 +33,26 @@ export const CreateExtraMonths = catchAsyncError(async(req, res, next)=>{
         }
     });
     } else {
-      extra_months.month=month;
-      extra_months.value=value;
+      if(extra_months.month===month){
+        extra_months.month=month;
+        extra_months.value=value;
+      } else {
+        extra_months = new ExtraMonth({
+          user:{
+              id: user._id,
+              name:user.name,
+              department:user.department
+          },
+          month, value,responseId,
+           form:{
+              id: form._id,
+              name:form.name,
+              fy:form.financial_year,
+              ay:form.assessment_year
+          }
+      });
+      }
+      
     }
 
    
@@ -85,7 +103,22 @@ export const UpdateExtraMonths = catchAsyncError(async(req, res, next)=>{
 export const GetAllMonths = catchAsyncError(async(req, res, next)=>{
     const formId = await ItForm.findById(req.params.id);
 
-    const extraMonths = await ExtraMonth.find({'form.id':formId})
+    const extraMonths = await ExtraMonth.find({'form.id':formId}).sort({createdAt:-1});
+    // let extraMonths = [];
+    // let n = result.length
+    // if(result.length!==0){
+    //   for(let i=0; i<n; i++){
+    //     let temp = {
+    //       id:result[i]._id,
+    //       Name:result[i].user.name,
+    //       Month:result[i].month,
+    //       Value:result[i].value,
+    //       createdAt:result[i].createdAt,
+    //       responseId:result[i].responseId
+    //     }
+    //     extraMonths.push(temp)
+    //   }
+    // }
 
           res.status(200).json({
             success:true,
