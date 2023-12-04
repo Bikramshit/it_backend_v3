@@ -669,13 +669,24 @@ export const getResponseDetails = catchAsyncError(async(req, res, next)=>{
 });
 
 export const getAllResponseByForm = catchAsyncError(async(req, res, next)=>{
+  const remark = req.query.remark || "";
+  console.log(remark);
+
     const form = await ItForm.findById(req.params.id);
-    const responses = await FormResponse.find({FormId:form._id, submitStatus:"Yes"}).sort({submitTime:-1});
+    const responses = await FormResponse.find({FormId:form._id, submitStatus:"Yes", 
+    remark: {
+      $regex: remark,
+      $options: "i",
+    },  
+  }).sort({submitTime:-1});
+
     res.status(200).json({
         success:true,
         responses
       });
 });
+
+
 
 export const getAllPendingResponse = catchAsyncError(async(req, res, next)=>{
   const user = await User.findById(req.user._id);
