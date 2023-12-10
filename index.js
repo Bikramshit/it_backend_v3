@@ -32,7 +32,7 @@ app.use('/', (req,res,send)=>{
 
 
 
-let port = process.env.PORT || 4041
+let port = process.env.PORT || 4040
 
 app.listen(port, () => {
     console.log(`Server is working on port: ${process.env.PORT}`);

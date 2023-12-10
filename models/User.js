@@ -61,8 +61,10 @@ const schema = new mongoose.Schema({
       age:{
         type:Number
       },
+      emp_id:{
+        type:String
+      },
      
-      
     
       resetPasswordToken: String,
       resetPasswordExpire: String,

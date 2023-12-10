@@ -9,7 +9,7 @@ import { SendOTP, sendEmail } from "../utils/sendOTP.js";
 
 
 export const Register = catchAsyncError(async(req, res, next)=>{
-    const {name,  phone,email, password, dob, designation, department, pan, category, aadhaar} = req.body;
+    const {name,  phone,email, password, dob, designation, department, pan, category, aadhaar, emp_id} = req.body;
     
     if(!pan || !password ) return next(new ErrorHandler("Please enter all field", 400));
     
@@ -20,7 +20,7 @@ export const Register = catchAsyncError(async(req, res, next)=>{
           
       
           user = new User({
-            name, phone, password, email, verified:true, dob, designation, department, pan, category, aadhaar
+            name, phone, password, email, verified:true, dob, designation, department, pan, category, aadhaar, emp_id
           });
           await user.save();
 
@@ -35,7 +35,7 @@ export const Register = catchAsyncError(async(req, res, next)=>{
 export const CreateUser = catchAsyncError(async(req,res,next)=>{
   const admin = await User.findById(req.user._id);
   if(admin.role!=="admin") return next(new ErrorHandler("You are not allow to create new user", 400));
-  const {name,  phone,email, password, dob, designation, department, pan, category} = req.body;
+  const {name,  phone,email, password, dob, designation, department, pan, category, emp_id} = req.body;
   if(!pan || !password ) return next(new ErrorHandler("Please enter all field", 400));
 
   let user = await User.findOne({pan});
@@ -45,7 +45,7 @@ export const CreateUser = catchAsyncError(async(req,res,next)=>{
     
 
     user = new User({
-      name, phone, password, email, verified:true, dob, designation, department, pan, category
+      name, phone, password, email, verified:true, dob, designation, department, pan, category, emp_id
     });
     await user.save();
 
@@ -186,6 +186,9 @@ export const VerifyOtp = catchAsyncError(async (req, res, next) => {
   });
   
   export const getMyProfile = catchAsyncError(async (req, res, next) => {
+    let reqUser = req.user;
+    console.log(reqUser);
+    // if(reqUser===null) return ;
     const user = await User.findById(req.user._id);
     
     res.status(200).json({
