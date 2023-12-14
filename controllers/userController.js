@@ -299,20 +299,11 @@ export const VerifyOtp = catchAsyncError(async (req, res, next) => {
   });
 
   export const getAllUsers = catchAsyncError(async (req, res, next) => {
-    const users = await User.find({role:"user"}).sort({createdAt:-1});
+    const users = await User.find({role:"user"}).sort({emp_id:1});
   
     res.status(200).json({
       success: true,
       users,
-    });
-  });
-
-  export const getAllStudents = catchAsyncError(async (req, res, next) => {
-    const students = await User.find({role:"user"}).sort({createdAt:-1});
-  
-    res.status(200).json({
-      success: true,
-      students,
     });
   });
   

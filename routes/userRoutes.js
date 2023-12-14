@@ -1,6 +1,6 @@
 import express from "express";
 
-import { changePassword, CreateUser, deleteMyProfile, deleteUser, forgetPassword, getAllAdmins, getAllStudents, getAllUsers, getMyProfile, getUserDetails, login, loginAdmin, logout, Register,  ResendOTP,  resetPassword,  SendMail,  updateProfile,  updateUserRole, VerifyOtp } from "../controllers/userController.js";
+import { changePassword, CreateUser, deleteMyProfile, deleteUser, forgetPassword, getAllAdmins,  getAllUsers, getMyProfile, getUserDetails, login, loginAdmin, logout, Register,  ResendOTP,  resetPassword,  SendMail,  updateProfile,  updateUserRole, VerifyOtp } from "../controllers/userController.js";
 import { authorizeAdmin, isAuthenticated, notAuthorizeUser } from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -48,8 +48,7 @@ router.route("/resetpassword/:token").put(resetPassword);
 // Admin Routes
 router.route("/admin/users").get(isAuthenticated, authorizeAdmin, getAllUsers);
 
-// Admin Routes
-router.route("/admin/students").get(isAuthenticated, authorizeAdmin, getAllStudents);
+
 
 
 
