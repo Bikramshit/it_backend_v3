@@ -13,7 +13,7 @@ export const CreateResponse = catchAsyncError(async(req, res, next)=>{
 
     const user = await User.findById(req.user._id);
     const form = await ItForm.findById(req.params.id);
-    const {name, pan, email, phone, department, designation, category, dob} = req.body;
+    const {name, pan, email, phone, department, designation, category, dob, aadhaar} = req.body;
     if(!name || !pan || !email ||!phone || !department || !designation || !dob) return next(new ErrorHandler("Enter all the fileds", 409))
 
    let response = await FormResponse.find({$and:[{FormId:{$eq:form._id}}, {userId:{$eq:user._id}}]});
