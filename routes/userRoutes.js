@@ -1,12 +1,13 @@
 import express from "express";
 
-import { changePassword, CreateUser, deleteMyProfile, deleteUser, forgetPassword, getAllAdmins,  getAllUsers, getMyProfile, getUserDetails, login, loginAdmin, logout, Register,  ResendOTP,  resetPassword,  SendMail,  updateProfile,  updateUserRole, VerifyOtp } from "../controllers/userController.js";
+import { changePassword, CreateUser, deleteMyProfile, deleteUser, forgetPassword, getAllAdmins,  getAllUsers, getMyProfile, getUserDetails, login, loginAdmin, logout, Register,  RegisterOtp,  ResendOTP,  resetPassword,  SendMail,  updateProfile,  updateUserRole, VerifyOtp } from "../controllers/userController.js";
 import { authorizeAdmin, isAuthenticated, notAuthorizeUser } from "../middlewares/auth.js";
 
 const router = express.Router();
 
 // Register & Send otp
 router.route('/register').post(Register);
+router.route('/register-otp').post(RegisterOtp);
 
 router.route('/verify').post(VerifyOtp);
 router.route('/resend').put(ResendOTP);

@@ -20,6 +20,10 @@ const schema = mongoose.Schema({
         enum:["Yes", "No"],
         default:"No"
     },
+    reSubmission:{
+      type:Boolean, 
+      default:false
+    },
     submitTime:{
         type:Date
     },

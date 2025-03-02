@@ -17,13 +17,11 @@ const schema = new mongoose.Schema({
       phone: {
         type: String,
         validate: [validator.isMobilePhone, "Please Enter a valid phone"],
-        unique:true
+     
       },
     
       password: {
         type: String,
-        required: [true, "Please enter your password"],
-        minLength: [6, "Password must be at least 6 characters"],
         select: false,
       },
       role: {

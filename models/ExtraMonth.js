@@ -11,7 +11,7 @@ const schema = mongoose.Schema({
         type:String
     },
     value:{
-        type:Number
+        type:String
     },
     form:{
         id:{

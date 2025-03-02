@@ -8,29 +8,122 @@ import { SendOTP, sendEmail } from "../utils/sendOTP.js";
 
 
 
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 8; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+
+
 export const Register = catchAsyncError(async(req, res, next)=>{
-    const {name,  phone,email, password, dob, designation, department, pan, category, aadhaar, emp_id} = req.body;
+    const {pan} = req.body;
     
-    if(!pan || !password ) return next(new ErrorHandler("Please enter all field", 400));
+    if(!pan) return next(new ErrorHandler("Please enter all field", 400));
     
-        let user = await User.findOne({pan});
-        if (user ) return next(new ErrorHandler("User Already Exist", 409));
+        let user = await User.findOne({pan}).select("+password");
+       
         
-      
+        if (!user) return next(new ErrorHandler("User not found", 409));
+   
+        if(user.password!==undefined && user.password!==null){
+          return next(new ErrorHandler("You are already a registered user.", 409));
+        }
+          const otp = Math.floor(100000 + Math.random() * 900000);
           
-      
-          user = new User({
-            name, phone, password, email, verified:true, dob, designation, department, pan, category, aadhaar, emp_id
-          });
+          
+          user.phoneOTP=`${otp}`;
           await user.save();
+          let msg =`
+          <p> <b> Dear User,</b> </p>
+          <p>Your one time password(OTP) for registration is <b> ${otp} </b>. Do not share with anyone. This OTP is valid for 15 minutes. </p>
+           
+          <p>If you didn't request this code, you can safely ignore this email. </p>
+          
+          <p>Thank you, </p>
+          <p>Finance Officer, Aliah University </p>  
+                    
+          
+                    
+                    `
+                    // SendOTP(phone, msg);
+                    let subject = "One Time Password for Registration"
+        
+                  await  sendEmail(user.email,subject, msg );
+        
+            
 
           res.status(200).json({
             success:true,
-            message: "User created Successfully",
+            message:`OTP sent to your email id ${test_str(user.email)}`,
             user
           });
 
     });
+
+export const RegisterOtp = catchAsyncError(async(req, res, next)=>{
+  const {pan, otp} = req.body;
+  console.log(pan, otp);
+  
+  let user = await User.findOne({pan:pan, phoneOTP:otp});
+  if(!user) return next(new ErrorHandler("Invalid or expired OTP.", 409));
+
+  let password = makeid();
+  user.password = password;
+  user.save();
+  let msg =`
+  <p> <b> Dear ${user.name},</b> </p>
+  <p>The auto-generated password for first time login is <b>${password}</b>. The user is adviced to change the password later on.     Do not share the password with anyone.  </p>
+   
+  
+  <p>Thank you, </p>
+  <p>Finance Officer, Aliah University </p>  
+            
+  
+            
+            `
+            // SendOTP(phone, msg);
+            let subject = "Password for Login"
+
+          await  sendEmail(user.email,subject, msg );
+  
+  res.status(200).json({
+    success:true,
+    message: "Password sent to your registered email id.",
+    user
+  });
+
+
+});
+
+    // export const Register = catchAsyncError(async(req, res, next)=>{
+    //   const {name,  phone,email, password, dob, designation, department, pan, category, aadhaar, emp_id} = req.body;
+      
+    //   if(!pan || !password ) return next(new ErrorHandler("Please enter all field", 400));
+      
+    //       let user = await User.findOne({pan});
+    //       if (user ) return next(new ErrorHandler("User Already Exist", 409));
+          
+        
+            
+        
+    //         user = new User({
+    //           name, phone, password, email, verified:true, dob, designation, department, pan, category, aadhaar, emp_id
+    //         });
+    //         await user.save();
+  
+    //         res.status(200).json({
+    //           success:true,
+    //           message: "User created Successfully",
+    //           user
+    //         });
+  
+    //   });
 
 export const CreateUser = catchAsyncError(async(req,res,next)=>{
   const admin = await User.findById(req.user._id);
@@ -41,7 +134,26 @@ export const CreateUser = catchAsyncError(async(req,res,next)=>{
   let user = await User.findOne({pan});
   if (user ) return next(new ErrorHandler("User Already Exist", 409));
   
+  // const otp = Math.floor(100000 + Math.random() * 900000);
+  // user.phoneOTP=otp;
+  // await user.save();
+  // let msg =`
+  // <p> <b> Dear User,</b> </p>
+  // <p>Your one time password(OTP) for login is <b> ${otp} </b>. Do not share with anyone. This OTP is valid for 15 minutes. </p>
+   
+  // <p>If you didn't request this code, you can safely ignore this email. </p>
   
+  // <p>Thank you, </p>
+  // <p>Finance Officer, Aliah University </p>  
+            
+  
+            
+  //           `
+  //           // SendOTP(phone, msg);
+  //           let subject = "One Time Password for Login"
+
+  //         await  sendEmail(user.email,subject, msg );
+
     
 
     user = new User({
@@ -69,9 +181,14 @@ export const login = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("Please enter all field", 400));
   
     const user = await User.findOne({ pan }).select("+password");
+    
   
-    if (!user) return next(new ErrorHandler("Incorrect Username or Password", 401));
-  
+    if (!user) return next(new ErrorHandler("User not found", 401));
+
+    if(user.password==null || user.password==undefined){
+      return next(new ErrorHandler("User not found", 401));
+    }
+    
     const isMatch = await user.comparePassword(password);
   
     if (!isMatch) return next(new ErrorHandler("Incorrect Username or Password", 401));
@@ -187,7 +304,8 @@ export const VerifyOtp = catchAsyncError(async (req, res, next) => {
   
   export const getMyProfile = catchAsyncError(async (req, res, next) => {
     let reqUser = req.user;
-    console.log(reqUser);
+    console.log("Req User:::", reqUser);
+    if(!reqUser) return next(new ErrorHandler("Request user is missing.", 409)); 
     // if(reqUser===null) return ;
     const user = await User.findById(req.user._id);
     

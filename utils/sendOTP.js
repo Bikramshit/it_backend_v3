@@ -32,23 +32,35 @@ export const SendOTP = async (to, text)=> {
 
   export const sendEmail = async (to, subject, text) => {
     const transporter = createTransport({
-      service:"gmail",
+      // service:"gmail",
+      // host: 'smtp.gmail.com',
+      // port: 465,
+      // secure: true,
+      service: 'gmail',
+      port:465,
+      secure: true, // true for 465, false for other ports
+      logger: true,
+      debug: true,
+      secureConnection: false,      
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      tls: {
+        rejectUnAuthorized:true
+        }
     });
 
     const Options = {
       from: process.env.SMTP_USER,
       to:to,
       subject:subject,
-      html: text
+      html: text,
     }
-
+ 
     await transporter.sendMail(Options, function(error, info){
       if(error){
-        console.log(error);
+        console.log("Message Error",error);
       }else {
         console.log("Email Sent");
       }

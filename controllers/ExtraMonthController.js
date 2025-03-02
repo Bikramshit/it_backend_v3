@@ -7,6 +7,7 @@ import {ItForm} from "../models/ItForm.js"
 
 export const CreateExtraMonths = catchAsyncError(async(req, res, next)=>{
     const {id, month, value, formId, responseId } = req.body;
+    console.log(id, month, value, formId, responseId);
      
     if(!id || !month || !value || !formId ) return next(new ErrorHandler("Please enter all field", 400));
 

@@ -81,7 +81,7 @@ export const SubmitUpdatedRespnse = catchAsyncError(async(req,res,next)=>{
 
     response.submitTime = Date.now();
 
-    response.save();
+    await response.save();
 
 
     res.status(200).json({
@@ -90,6 +90,14 @@ export const SubmitUpdatedRespnse = catchAsyncError(async(req,res,next)=>{
         
       });
 });
+
+
+// function generateAutoRegistrationId(prefix, count) {
+//   // Pad the count to always have 3 digits
+//   let paddedCount = String(count).padStart(3, '0');
+//   return `${prefix}${paddedCount}`;
+// }
+
 
 export const SubmitResponse = catchAsyncError(async(req,res,next)=>{
  
@@ -103,7 +111,13 @@ export const SubmitResponse = catchAsyncError(async(req,res,next)=>{
     if(todayDate>form.expiryDate) return next(new ErrorHandler("Form has expired", 409));
     if(response.submitStatus==="No"){
         response.submitStatus="Yes";
-        response.remark = "Submitted"
+        response.remark = "Submitted";
+        // const totalCount = await response.find({FormId:});
+        // let prefix = "IT2025";
+        // let len = totalCount.length + 1
+        // let registrationId = generateAutoRegistrationId(prefix, len.toString());
+        // response.responseId=registrationId;
+
     }
 
     response.submitTime = Date.now();
@@ -187,6 +201,9 @@ export const CancelForm = catchAsyncError(async(req,res,next)=>{
 
 
 export const deleteResponse = catchAsyncError(async(req, res, next)=>{
+
+  
+
     let response = await FormResponse.findById(req.params.id);
     let user = await User.findById(req.user._id);
     let form = await ItForm.findById(response.FormId);
@@ -674,6 +691,7 @@ export const getAllResponseByForm = catchAsyncError(async(req, res, next)=>{
 
     const form = await ItForm.findById(req.params.id);
     const responses = await FormResponse.find({FormId:form._id, submitStatus:"Yes", 
+    // remark:{$not:"Submitted"},
     remark: {
       $regex: remark,
       $options: "i",
@@ -732,3 +750,29 @@ export const activeResponses = catchAsyncError(async(req, res, next)=>{
 
 
 
+export const ReSubmission = catchAsyncError(async(req, res, next)=>{
+
+  const user = await User.findById(req.user._id);
+  const response = await FormResponse.findById(req.params.id);
+  if(!response ) return next(new ErrorHandler("Response Not Found", 409));
+  
+  let form = await ItForm.findById(response.FormId);
+  if(!form ) return next(new ErrorHandler("Form Not Found", 409));
+  let todayDate = Date.now();
+  if(todayDate>form.expiryDate) return next(new ErrorHandler("Form has expired", 409));
+
+  if(response.submitStatus==="Yes"){
+    response.submitStatus="No";
+    response.reSubmission = true;
+}
+
+  await response.save();
+res.status(200).json({
+  success:true,
+  message: "Response Updated Successfully",
+  response:response
+  
+});
+  
+  
+})

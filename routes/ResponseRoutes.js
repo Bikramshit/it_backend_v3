@@ -1,6 +1,6 @@
 import express from "express";
 import { authorizeAdmin, isAuthenticated, onlyUser } from "../middlewares/auth.js";
-import { ApprovedResponse, CreateResponse, DocumentUpdate, ResponseFileUpload, SubmitResponse, activeResponses, deleteResponse, getAllPendingResponse, getAllResponse, getAllResponseByForm, getMyResponse, getResponseDetails, updateResponse } from "../controllers/ResponseController.js";
+import { ApprovedResponse, CreateResponse, DocumentUpdate, ReSubmission, ResponseFileUpload, SubmitResponse, activeResponses, deleteResponse, getAllPendingResponse, getAllResponse, getAllResponseByForm, getMyResponse, getResponseDetails, updateResponse } from "../controllers/ResponseController.js";
 import singleUpload from "../middlewares/multer.js";
 
 
@@ -9,7 +9,7 @@ const router =express.Router();
 
 router.route('/new/response/:id').post(isAuthenticated, onlyUser, CreateResponse);
 
-router.route('/response/:id').put(isAuthenticated, updateResponse).get(isAuthenticated, getResponseDetails).delete(isAuthenticated, onlyUser, deleteResponse);
+router.route('/response/:id').put(isAuthenticated, updateResponse).get(isAuthenticated, getResponseDetails).delete(isAuthenticated, authorizeAdmin, deleteResponse);
 
 router.route('/response/upload/:id').put(isAuthenticated, onlyUser, singleUpload, ResponseFileUpload)
 
@@ -28,7 +28,7 @@ router.route('/active/responses').get(isAuthenticated, onlyUser, activeResponses
 router.route('/approved/response/:id').put(isAuthenticated, authorizeAdmin, ApprovedResponse);
 router.route('/document/status/:id').put(isAuthenticated, authorizeAdmin, DocumentUpdate);
 
-
+router.route('/response/resubmission/:id').put(isAuthenticated, onlyUser, ReSubmission);
 
 
 
